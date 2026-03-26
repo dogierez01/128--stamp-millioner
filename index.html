@@ -1,1 +1,542 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Millionaire Academy - Language Studio</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Oswald:wght@500&display=swap');
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #020205;
+            background-image: radial-gradient(circle at 50% 50%, #080a24 0%, #020205 100%);
+            font-family: 'Oswald', sans-serif;
+            margin: 0;
+            color: white;
+            overflow-y: auto;
+        }
+
+        /* --- LOBBY STYLES --- */
+        #lobby-view {
+            text-align: center;
+            width: 100%;
+            max-width: 1100px;
+            padding: 40px 20px;
+        }
+
+        .studio-title {
+            font-family: 'Cinzel', serif;
+            color: #d4af37;
+            font-size: 56px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            letter-spacing: 4px;
+        }
+
+        .studio-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .studio-card {
+            background: linear-gradient(180deg, #111432 0%, #050612 100%);
+            border: 3px solid #3d5afe;
+            border-radius: 50px;
+            padding: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .studio-card:hover {
+            transform: scale(1.05);
+            border-color: #d4af37;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .studio-card h2 {
+            font-family: 'Cinzel', serif;
+            color: #e0f7fa;
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .completion-badge {
+            display: none;
+            margin-top: 15px;
+            border-top: 1px solid #3d5afe;
+            padding-top: 10px;
+        }
+
+        .completion-badge.visible { display: block; }
+
+        #reset-btn {
+            background: transparent; color: #ff1744; border: 2px solid #ff1744;
+            padding: 10px 20px; font-family: 'Oswald', sans-serif; font-size: 18px;
+            border-radius: 4px; cursor: pointer; margin-bottom: 40px;
+        }
+
+        /* --- GAME STYLES --- */
+        #game-view { display: none; width: 1250px; }
+
+        #studio-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Question Box */
+        #question-box {
+            width: 100%;
+            background: #050612;
+            border: 3px solid #3d5afe;
+            border-radius: 100px;
+            padding: 60px 40px;
+            margin-bottom: 50px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 40px rgba(61, 90, 254, 0.3);
+        }
+
+        #question-text {
+            font-size: 42px;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        /* Options Grid */
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            width: 100%;
+        }
+
+        .option-btn {
+            background: #050612;
+            border: 2px solid #3d5afe;
+            border-radius: 50px;
+            padding: 30px 40px;
+            font-size: 32px;
+            color: #ffffff;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: rgba(61, 90, 254, 0.2);
+            border-color: #d4af37;
+        }
+
+        .option-label {
+            color: #d4af37;
+            font-weight: bold;
+            margin-right: 20px;
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Result States */
+        .option-btn.selected { background: #d4af37; color: #000; border-color: #fff; }
+        .option-btn.correct { background: #39FF14 !important; color: #000; border-color: #fff; font-weight: 900; }
+        .option-btn.wrong { background: #ff1744 !important; color: #fff; border-color: #fff; }
+
+        /* Dashboard */
+        #dashboard {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #3d5afe;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px;
+            width: 100%;
+        }
+
+        .meter { text-align: center; min-width: 250px; }
+        .meter-title { font-family: 'Cinzel', serif; font-size: 16px; color: #3d5afe; text-transform: uppercase; }
+        .meter-val { font-size: 36px; font-weight: bold; color: #e0f7fa; }
+        #success-val { color: #FFFF00; }
+        #timer-val { color: #39FF14; text-shadow: 0 0 10px rgba(57, 255, 20, 0.5); }
+
+        #back-btn {
+            position: fixed; top: 20px; left: 20px;
+            background: transparent; border: 1px solid #3d5afe; color: #3d5afe;
+            padding: 10px 20px; border-radius: 5px; cursor: pointer;
+        }
+
+        /* --- CUSTOM MODAL --- */
+        #custom-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: #050612; border: 2px solid #d4af37; border-radius: 20px;
+            padding: 60px; text-align: center; max-width: 600px;
+        }
+        .modal-btn {
+            background: transparent; color: #d4af37; border: 2px solid #d4af37;
+            padding: 15px 40px; font-size: 24px; cursor: pointer; border-radius: 10px; margin-top: 30px;
+        }
+
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <button id="back-btn" onclick="returnToLobby()">◀ LOBBY</button>
+
+    <div id="lobby-view">
+        <h1 class="studio-title">MILLIONAIRE ACADEMY</h1>
+        <button id="reset-btn" onclick="resetProgress()">Sıfırla</button>
+        
+        <div class="studio-grid">
+            <div class="studio-card" onclick="startStudio('g1', 'STUDIO 1')">
+                <h2>STUDIO 1</h2>
+                <div id="badge-g1" class="completion-badge">
+                    <div style="color:#FFFF00">BAŞARI: <span id="percent-g1">0</span>%</div>
+                    <div style="color:#39FF14">SKOR: <span id="score-g1">0</span></div>
+                </div>
+            </div>
+            <div class="studio-card" onclick="startStudio('g2', 'STUDIO 2')">
+                <h2>STUDIO 2</h2>
+                <div id="badge-g2" class="completion-badge">
+                    <div style="color:#FFFF00">BAŞARI: <span id="percent-g2">0</span>%</div>
+                    <div style="color:#39FF14">SKOR: <span id="score-g2">0</span></div>
+                </div>
+            </div>
+            <div class="studio-card" onclick="startStudio('g3', 'STUDIO 3')">
+                <h2>STUDIO 3</h2>
+                <div id="badge-g3" class="completion-badge">
+                    <div style="color:#FFFF00">BAŞARI: <span id="percent-g3">0</span>%</div>
+                    <div style="color:#39FF14">SKOR: <span id="score-g3">0</span></div>
+                </div>
+            </div>
+            <div class="studio-card" onclick="startStudio('g4', 'STUDIO 4')">
+                <h2>STUDIO 4</h2>
+                <div id="badge-g4" class="completion-badge">
+                    <div style="color:#FFFF00">BAŞARI: <span id="percent-g4">0</span>%</div>
+                    <div style="color:#39FF14">SKOR: <span id="score-g4">0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-view">
+        <div id="studio-container">
+            <div id="question-box">
+                <p id="question-text"></p>
+            </div>
+
+            <div id="options-container">
+                <button class="option-btn" id="opt-A" onclick="checkAnswer('A')">
+                    <span class="option-label">A:</span> <span id="text-A"></span>
+                </button>
+                <button class="option-btn" id="opt-B" onclick="checkAnswer('B')">
+                    <span class="option-label">B:</span> <span id="text-B"></span>
+                </button>
+            </div>
+
+            <div id="dashboard">
+                <div class="meter"><div class="meter-title">MISSION SCORE</div><div class="meter-val" id="score-val">0</div></div>
+                <div class="meter"><div class="meter-title">SUCCESS RATE</div><div class="meter-val" id="success-val">0%</div></div>
+                <div class="meter"><div class="meter-title">THINKING TIME</div><div class="meter-val" id="timer-val">10</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-modal">
+        <div class="modal-content">
+            <h1 style="color:#d4af37; font-family:'Cinzel'">BÖLÜM SONU</h1>
+            <p id="modal-msg" style="font-size: 24px;"></p>
+            <button id="modal-btn" class="modal-btn" onclick="modalAction()"></button>
+        </div>
+    </div>
+
+    <script>
+        const rawData = [
+            { tr: "Ya koşabilirim ya da yürüyebilirim.", a: "I can either run or walk.", b: "I can either run nor walk.", ans: "A" },
+            { tr: "Yarışı bir şekilde kazandı.", a: "He someway won the race.", b: "He somehow won the race.", ans: "B" },
+            { tr: "Kapıyı bilerek kilitlemedim.", a: "I didn't lock the door on intention.", b: "I didn't lock the door on purpose.", ans: "B" },
+            { tr: "Arkasına bakmadan gitti.", a: "He left outside looking back.", b: "He left without looking back.", ans: "B" },
+            { tr: "Artık gidip oynayalım.", a: "Currently, let's go play.", b: "Now, let's go play.", ans: "B" },
+            { tr: "Hiç timsah yedin mi?", a: "Did you ever eat crocodile?", b: "Did you never eat crocodile?", ans: "A" },
+            { tr: "Sudan başka hiçbir şey içmem.", a: "I drink anything but water.", b: "I drink nothing but water.", ans: "B" },
+            { tr: "Bu kutu taş kadar ağır.", a: "This box is so heavy as stone.", b: "This box is as heavy as stone.", ans: "B" },
+            { tr: "Karşılık olarak gülümsedi.", a: "He smiled in return.", b: "He smiled in response.", ans: "A" },
+            { tr: "Hem kırmızıyı hem de maviyi severim.", a: "I like both red also blue.", b: "I like both red and blue.", ans: "B" },
+            { tr: "Tesadüfen karşılaştık.", a: "We met coincidentally.", b: "We met accidently.", ans: "A" },
+            { tr: "Sana bir dereceye kadar katılabilirim.", a: "I can agree with you to some amount.", b: "I can agree with you to some extent.", ans: "B" },
+            { tr: "Yağmur yağsa bile gideceğim.", a: "I will go even though it rains.", b: "I will go even if it rains.", ans: "B" },
+            { tr: "Yağmur yağdı; sonuç olarak kaldık.", a: "It rained; sequentially, we stayed.", b: "It rained; consequently, we stayed.", ans: "B" },
+            { tr: "O genç değil, ben de değilim.", a: "He is not young, and either am I.", b: "He is not young, and neither am I.", ans: "B" },
+            { tr: "Takım adına konuşuyorum.", a: "I speak on the name of the team.", b: "I speak on behalf of the team.", ans: "B" },
+            { tr: "Yağmur yağacakmış gibi görünüyor.", a: "It looks like if it will rain.", b: "It looks as if it will rain.", ans: "B" },
+            { tr: "Onu son zamanlarda gördüm.", a: "I saw him recently.", b: "I saw him newly.", ans: "A" },
+            { tr: "Kar yağarsa diye mont al.", a: "Take a coat in case of snow.", b: "Take a coat in the event for snow.", ans: "A" },
+            { tr: "Ona göre bu doğru.", a: "Regarding to him, it is true.", b: "According to him, it is true.", ans: "B" },
+            { tr: "Müsaitliğinizi göz önünde bulundurarak arıyorum.", a: "I am calling concerning of your availability.", b: "I am calling regarding your availability.", ans: "B" },
+            { tr: "Sen bekle, ben bu esnada çalışacağım.", a: "You wait; in the meantime, I will work.", b: "You wait; in the mid-time, I will work.", ans: "A" },
+            { tr: "Hız açısından iyi.", a: "It is good in terms of speed.", b: "It is good in conditions of speed.", ans: "A" },
+            { tr: "Bu yemek diğerine kıyasla daha lezzetli.", a: "This food is more delicious matching to the other food.", b: "This food is more delicious compared to the other food.", ans: "B" },
+            { tr: "Şehri temelli terk etti.", a: "He left the city for permanent.", b: "He left the city for good.", ans: "B" },
+            { tr: "Aslına bakarsan açım.", a: "As a matter of fact, I am hungry.", b: "As a truth of fact, I am hungry.", ans: "A" },
+            { tr: "Hava o kadar soğuktu ki çalıştıramadım.", a: "It was too cold that I couldn't start the car.", b: "It was so cold that I couldn't start the car.", ans: "B" },
+            { tr: "Maalesef maçı kaybettik.", a: "Unluckily, we lost the game.", b: "Unfortunately, we lost the game.", ans: "B" },
+            { tr: "Keşke cevabı bilseydim!", a: "If only I knew the answer!", b: "Only if I knew the answer!", ans: "A" },
+            { tr: "Oynamak yerine uyu.", a: "Sleep instead of playing.", b: "Sleep in place of playing.", ans: "A" },
+            { tr: "Bu şekilde maçı kazandılar.", a: "By this path, they won the game.", b: "In this way, they won the game.", ans: "B" },
+            { tr: "Bunu barış uğruna yap.", a: "Do it for the good of peace.", b: "Do it for the sake of peace.", ans: "B" },
+            { tr: "Bu hikaye gerçeklere dayanıyor.", a: "This story is based on true facts.", b: "This story is founded on true facts.", ans: "A" },
+            { tr: "Tatilimiz maddi durumumuza bağlı.", a: "Our holiday hangs on our financial situation.", b: "Our holiday depends on our financial situation.", ans: "B" },
+            { tr: "Bana avukatım aracılığıyla ulaşın.", a: "Reach me by via my lawyer.", b: "Reach me via my lawyer.", ans: "B" },
+            { tr: "Lütfen beni haberdar et.", a: "Please hold me posted.", b: "Please keep me posted.", ans: "B" },
+            { tr: "Sırasıyla birinci ve ikinciler.", a: "They are first and second, respectfully.", b: "They are first and second, respectively.", ans: "B" },
+            { tr: "Sadece bir dil sürçmesiydi.", a: "It was just a mistake of the tongue.", b: "It was just a slip of the tongue.", ans: "B" },
+            { tr: "İşte o noktada para devreye giriyor.", a: "That's when money enters in.", b: "That's where money comes in.", ans: "B" },
+            { tr: "Bundan sonra daha çok deneyeceğim.", a: "I will try harder from today on.", b: "I will try harder from now on.", ans: "B" },
+            { tr: "İlkini seviyorum, ikincisini değil.", a: "I like the former, not the latter.", b: "I like the first, not the latest.", ans: "A" },
+            { tr: "Artık burada olduğuna göre başlayalım.", a: "Now when you are here, let's start.", b: "Now that you are here, let's start.", ans: "B" },
+            { tr: "Ben zaten yedim.", a: "I already ate.", b: "I yet ate.", ans: "A" },
+            { tr: "Ucuz, üstelik iyi.", a: "It is cheap; moreover, it is good.", b: "It is cheap; more over, it is good.", ans: "A" },
+            { tr: "Mademki geç oldu, gitmeliyiz.", a: "Seeing that it is late, we must go.", b: "Looking that it is late, we must go.", ans: "A" },
+            { tr: "Kim tahmin ederdi?", a: "Who will guess.", b: "Who would guess.", ans: "B" },
+            { tr: "Senin sayende kazandık.", a: "We won thanks to you.", b: "We won grateful to you.", ans: "A" },
+            { tr: "Bardağın kırılma ihtimali yüksek.", a: "The glass is probable to break.", b: "The glass is likely to break.", ans: "B" },
+            { tr: "Şoför olarak çalışıyor.", a: "He works like a driver.", b: "He works as a driver.", ans: "B" },
+            { tr: "Üzgün değilim, bilakis mutluyum.", a: "I am not sad; on the contrary, I am happy.", b: "I am not sad; in the contrast, I am happy.", ans: "A" },
+            { tr: "Meğerse o haklıymış.", a: "It comes out that he was right.", b: "It turns out that he was right.", ans: "B" },
+            { tr: "Dilimin ucunda.", a: "It is on the tip of my tongue.", b: "It is on the edge of my tongue.", ans: "A" },
+            { tr: "Berabere kaldık, yani darılmaca yok.", a: "We tied the game, so no hard feelings.", b: "We tied the game, so no bad feelings.", ans: "A" },
+            { tr: "Bırak koşmayı, yürüyemiyorum bile.", a: "I can't walk, leave alone run.", b: "I can't walk, let alone run.", ans: "B" },
+            { tr: "Bildiğim kadarıyla evet.", a: "As long as I know, yes.", b: "As far as I know, yes.", ans: "B" },
+            { tr: "Su senin için iyidir.", a: "Water is good for you.", b: "Water is well for you.", ans: "A" },
+            { tr: "Pazartesi harika bir gündü.", a: "Monday was so a beautiful day.", b: "Monday was such a beautiful day.", ans: "B" },
+            { tr: "Öyle ya da böyle yap.", a: "Do it this way or that way.", b: "Do it this way or another.", ans: "A" },
+            { tr: "Yemekten öncesine kadar su içmemelisin.", a: "You shouldn't drink water until half an hour previous to eating.", b: "You shouldn't drink water until half an hour prior to eating.", ans: "B" },
+            { tr: "İlk bakışta iyi görünüyordu.", a: "At first look, it looked fine.", b: "At first glance, it looked fine.", ans: "B" },
+            { tr: "Zamanla öğreneceksin.", a: "You will learn in the flow of time.", b: "You will learn in the course of time.", ans: "B" },
+            { tr: "Görüldüğü üzere kızgın.", a: "He is angry, how it seems.", b: "He is angry, as it seems.", ans: "B" },
+            { tr: "İflasın eşiğinde.", a: "He is on the verge of bankruptcy.", b: "He is on the cliff of bankruptcy.", ans: "A" },
+            { tr: "Kısacası, biz kazandık.", a: "In a short shell, we won.", b: "In a nutshell, we won.", ans: "B" },
+            { tr: "Bunun benimle hiçbir ilgisi yok.", a: "It has nothing to make with me.", b: "It has nothing to do with me.", ans: "B" },
+            { tr: "Fark etmez.", a: "It doesn't matter.", b: "It isn't matter.", ans: "A" },
+            { tr: "Kahve yerine çay istiyorum.", a: "I want tea other than coffee.", b: "I want tea rather than coffee.", ans: "B" },
+            { tr: "Kaşla göz arasında oldu.", a: "It happened in the wink of an eye.", b: "It happened in the blink of an eye.", ans: "B" },
+            { tr: "Bunun üzerine odadan çıktı.", a: "Upon this, he left the room.", b: "Above this, he left the room.", ans: "A" },
+            { tr: "Canı pahasına yalan söylemedi.", a: "He didn't lie in expense of his life.", b: "He didn't lie in cost of his life.", ans: "A" },
+            { tr: "O henüz burada değil.", a: "He is not here still.", b: "He is not here yet.", ans: "B" },
+            { tr: "Artık aç değilim.", a: "I am not hungry anymore.", b: "I am not hungry no more.", ans: "A" },
+            { tr: "Ne yaparsan yap, güvende ol.", a: "However you do, be safe.", b: "Whatever you do, be safe.", ans: "B" },
+            { tr: "Tıpkı bir kuşa benziyor.", a: "It looks exact like a bird.", b: "It looks just like a bird.", ans: "B" },
+            { tr: "Bu arada, merhaba.", a: "By the way, hello.", b: "On the way, hello.", ans: "A" },
+            { tr: "Sadece hızlı değil, aynı zamanda güçlü.", a: "He is not just fast but too strong.", b: "He is not only fast but also strong.", ans: "B" },
+            { tr: "Ne kadar çok okursan o kadar öğrenirsin.", a: "The more you read, the more you learn.", b: "Much you read, much you learn.", ans: "A" },
+            { tr: "Hızlı at daha pahalıdır.", a: "Faster a horse is, more expensive it is.", b: "The faster a horse is, the more expensive it is.", ans: "B" },
+            { tr: "Ne bunu istiyorum ne de onu.", a: "I want neither this or that.", b: "I want neither this nor that.", ans: "B" },
+            { tr: "Kuralları aklında tut.", a: "Hold in mind the rules.", b: "Keep in mind the rules.", ans: "B" },
+            { tr: "O zamanlar fakirdik.", a: "We were poor than.", b: "We were poor then.", ans: "B" },
+            { tr: "Bileti ben alırım ya da tam tersi.", a: "I buy the ticket and you pay for the food, or vice versa.", b: "I buy the ticket and you pay for the food, or reverse versa.", ans: "A" },
+            { tr: "Derhal koşmayı bırak.", a: "Stop running right now.", b: "Stop running at once.", ans: "B" },
+            { tr: "O tenis oynar, ben de oynarım.", a: "He plays tennis, and so do I.", b: "He plays tennis, and so am I.", ans: "A" },
+            { tr: "En kısa sürede gel.", a: "Come as fast as possible.", b: "Come as soon as possible.", ans: "B" },
+            { tr: "Kayağa gitme durumunda mont al.", a: "Take your coat in condition you go skiing.", b: "Take your coat in case you go skiing.", ans: "B" },
+            { tr: "Düştüm; bu yüzden canım acıyor.", a: "I fell; therefor, I am hurt.", b: "I fell; therefore, I am hurt.", ans: "B" },
+            { tr: "Kaderin bir cilvesiyle tanıştık.", a: "By a turn of fate, we met.", b: "By a twist of fate, we met.", ans: "B" },
+            { tr: "Uzun vadede sağlıklıdır.", a: "It is healthy in the long term.", b: "It is healthy in the long time.", ans: "A" },
+            { tr: "Katiyen kumar oynamam.", a: "I don't gamble completely.", b: "I don't gamble at all.", ans: "B" },
+            { tr: "Söylentiye göre kaçmışlar.", a: "Gossip has it they escaped.", b: "Rumour has it they escaped.", ans: "B" },
+            { tr: "Yorgun olduğu çok bariz.", a: "It is obvious that he is tired.", b: "It is clearly that he is tired.", ans: "A" },
+            { tr: "Yağmura rağmen oynuyoruz.", a: "We play irregardless of the rain.", b: "We play regardless of the rain.", ans: "B" },
+            { tr: "İşin başında ona güvenmemeliydik.", a: "We shouldn't have trusted him in the first place.", b: "We shouldn't have trusted him in the starting place.", ans: "A" },
+            { tr: "Bitirdiğinde bana haber ver.", a: "Make me know when you finish.", b: "Let me know when you finish.", ans: "B" },
+            { tr: "Daha önce dediğim gibi, hayır.", a: "Like I said before, no.", b: "As I said before, no.", ans: "B" },
+            { tr: "Bitirdikten sonra uyudu.", a: "After finished, he slept.", b: "Having finished, he slept.", ans: "B" },
+            { tr: "Adından anlaşılacağı gibi, mavi.", a: "As the name suggests, it is blue.", b: "As the name gives, it is blue.", ans: "A" },
+            { tr: "Bu gürültüden bıktım.", a: "I am full up with this noise.", b: "I am fed up with this noise.", ans: "B" },
+            { tr: "Ben de kahve içeceğim.", a: "I will drink coffee as well.", b: "I will drink coffee as good.", ans: "A" },
+            { tr: "Alınma ama katılmıyorum.", a: "No offend, but I disagree.", b: "No offense, but I disagree.", ans: "B" },
+            { tr: "Oturmamın bir sakıncası var mı?", a: "Do you care if I sit?", b: "Do you mind if I sit?", ans: "B" },
+            { tr: "Bunu son çare olarak kullan.", a: "Use it as a last choice.", b: "Use it as a last resort.", ans: "B" },
+            { tr: "Beni damdan düşercesine aradı.", a: "He called me out of the sudden.", b: "He called me out of the blue.", ans: "B" },
+            { tr: "Ona güvenemeyiz.", a: "He is a bad man; in other words, we can't trust him.", b: "He is a bad man; with other words, we can't trust him.", ans: "A" },
+            { tr: "O bardağı taşıran son damlaydı.", a: "That was the dropping point.", b: "That was the tipping point.", ans: "B" },
+            { tr: "Biletleri peşinen ödeyin.", a: "Pay for the tickets in beforehand.", b: "Pay for the tickets in advance.", ans: "B" },
+            { tr: "En azından bir kez dene.", a: "Try it at least once.", b: "Try it at last once.", ans: "A" },
+            { tr: "Madalyonun diğer yüzü: orası soğuk.", a: "We will live abroad, but the coin has a flipside: it is cold there.", b: "We will live abroad, but the coin has a backside: it is cold there.", ans: "A" },
+            { tr: "Bilseydim yardım ederdim.", a: "If I had knew, I would have helped.", b: "Had I known, I would have helped.", ans: "B" },
+            { tr: "Türkiye'de enflasyonu öğrenmelisin.", a: "You have to learn about inflation as long as you stay in Turkey.", b: "You have to learn about inflation so long that you stay in Turkey.", ans: "A" },
+            { tr: "Beni yanlış anlama.", a: "Don't get me wrong, but I like it.", b: "Don't take me wrong, but I like it.", ans: "A" },
+            { tr: "Çıkmak üzereyim.", a: "I am about to leave.", b: "I am around to leave.", ans: "A" },
+            { tr: "Allah'tan güvendeyiz.", a: "Fortunally, we are safe.", b: "Fortunately, we are safe.", ans: "B" },
+            { tr: "30 dakikamı alıyor.", a: "It makes me 30 minutes to wash the car.", b: "It takes me 30 minutes to wash the car.", ans: "B" },
+            { tr: "Öte yandan, ucuz.", a: "On the other side, it's cheap.", b: "On the other hand, it's cheap.", ans: "B" },
+            { tr: "Aynı şey ortağım için geçerli.", a: "The same runs for my partner.", b: "The same goes for my partner.", ans: "B" },
+            { tr: "Senin aksine hızlı koşarım.", a: "Dislike you, I run fast.", b: "Unlike you, I run fast.", ans: "B" },
+            { tr: "Davet edilmedikçe girme.", a: "Don't enter if not you are invited.", b: "Don't enter unless you are invited.", ans: "B" },
+            { tr: "Düştü ama yine de gülümsedi.", a: "He fell, although he smiled.", b: "He fell, yet he smiled.", ans: "B" },
+            { tr: "Ekonomi bir kısır döngü.", a: "The Turkish economy is a blind circle.", b: "The Turkish economy is a vicious circle.", ans: "B" },
+            { tr: "Ortalama olarak hava sıcak.", a: "On average, it is warm.", b: "On normal, it is warm.", ans: "A" },
+            { tr: "Gerçeklerin ışığında kazandı.", a: "Under the light of these facts, he won.", b: "Under the shine of these facts, he won.", ans: "A" },
+            { tr: "Eninde sonunda duracak.", a: "He will eventfully stop.", b: "He eventually stops.", ans: "B" },
+            { tr: "Çay veya kahve, aynı hesap.", a: "Tea or coffee, same difference.", b: "Tea or coffee, same distinction.", ans: "A" },
+            { tr: "Kırk yılda bir konuşuruz.", a: "We talk once in a time.", b: "We talk once in a while.", ans: "B" },
+            { tr: "Sözüm ona patron o.", a: "So to tell, he is the boss.", b: "So to say, he is the boss.", ans: "B" },
+            { tr: "Benzer şekilde katılıyorum.", a: "Familiarly, I agree.", b: "Similarly, I agree.", ans: "B" }
+        ];
+
+        let currentSet = [], retryPool = [], currentIdx = 0, score = 0, corrects = 0, totalAtts = 0, phase = 1, gameId = "";
+        let countdown, timerVal = 10;
+
+        const STORAGE_KEY = "millProgress";
+
+        function updateLobby() {
+            const progress = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+            ['g1','g2','g3','g4'].forEach(id => {
+                if(progress[id]) {
+                    document.getElementById('badge-'+id).classList.add('visible');
+                    document.getElementById('score-'+id).innerText = progress[id].score;
+                    document.getElementById('percent-'+id).innerText = progress[id].percent;
+                } else {
+                    document.getElementById('badge-'+id).classList.remove('visible');
+                }
+            });
+        }
+
+        function resetProgress() {
+            if(confirm("Tüm ilerlemeyi sil?")) { localStorage.removeItem(STORAGE_KEY); updateLobby(); }
+        }
+
+        function startStudio(id, title) {
+            gameId = id;
+            const start = (parseInt(id.slice(1)) - 1) * 32;
+            currentSet = rawData.slice(start, start + 32);
+            retryPool = []; currentIdx = 0; score = 0; corrects = 0; totalAtts = 0; phase = 1;
+            document.getElementById('lobby-view').style.display = 'none';
+            document.getElementById('game-view').style.display = 'block';
+            document.getElementById('score-val').innerText = "0";
+            document.getElementById('success-val').innerText = "0%";
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const pool = phase === 1 ? currentSet : retryPool;
+            if(currentIdx >= pool.length) {
+                if(phase === 1 && retryPool.length > 0) {
+                    showModal("Lifeline Aktif!", "Ana tur bitti. Şimdi yanlışlarını düzeltme vakti!", "BAŞLA", 2);
+                } else {
+                    endGame();
+                }
+                return;
+            }
+            const q = pool[currentIdx];
+            document.getElementById('question-text').innerText = q.tr;
+            document.getElementById('text-A').innerText = q.a;
+            document.getElementById('text-B').innerText = q.b;
+            
+            resetButtons();
+            startTimer();
+        }
+
+        function resetButtons() {
+            ['A','B'].forEach(l => {
+                const b = document.getElementById('opt-'+l);
+                b.className = 'option-btn';
+                b.disabled = false;
+            });
+        }
+
+        function startTimer() {
+            clearInterval(countdown);
+            timerVal = 10;
+            document.getElementById('timer-val').innerText = timerVal;
+            countdown = setInterval(() => {
+                timerVal--;
+                document.getElementById('timer-val').innerText = timerVal;
+                if(timerVal <= 0) clearInterval(countdown);
+            }, 1000);
+        }
+
+        function checkAnswer(choice) {
+            clearInterval(countdown);
+            const pool = phase === 1 ? currentSet : retryPool;
+            const q = pool[currentIdx];
+            const btn = document.getElementById('opt-'+choice);
+            const correctBtn = document.getElementById('opt-'+q.ans);
+            
+            btn.classList.add('selected');
+            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+
+            setTimeout(() => {
+                if(choice === q.ans) {
+                    btn.classList.add('correct');
+                    if(phase === 1) { score += 100; corrects++; }
+                } else {
+                    btn.classList.add('wrong');
+                    correctBtn.classList.add('correct');
+                    if(phase === 1) retryPool.push(q);
+                }
+
+                if(phase === 1) {
+                    totalAtts++;
+                    document.getElementById('score-val').innerText = score;
+                    document.getElementById('success-val').innerText = Math.round((corrects/totalAtts)*100) + "%";
+                }
+
+                setTimeout(() => {
+                    if(phase === 2 && choice === q.ans) {
+                        retryPool.splice(currentIdx, 1);
+                    } else {
+                        currentIdx++;
+                    }
+                    renderQuestion();
+                }, 1000);
+            }, 600);
+        }
+
+        function showModal(title, msg, btn, nextPhase) {
+            document.getElementById('modal-msg').innerText = msg;
+            document.getElementById('modal-btn').innerText = btn;
+            document.getElementById('custom-modal').style.display = 'flex';
+        }
+
+        function modalAction() {
+            document.getElementById('custom-modal').style.display = 'none';
+            phase = 2; currentIdx = 0;
+            renderQuestion();
+        }
+
+        function endGame() {
+            const perc = Math.round((corrects/totalAtts)*100);
+            let progress = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+            progress[gameId] = { score, percent: perc };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+            
+            document.getElementById('question-text').innerText = "MISSION COMPLETE!";
+            document.getElementById('options-container').style.display = 'none';
+        }
+
+        function returnToLobby() {
+            clearInterval(countdown);
+            document.getElementById('lobby-view').style.display = 'block';
+            document.getElementById('game-view').style.display = 'none';
+            document.getElementById('options-container').style.display = 'grid';
+            updateLobby();
+        }
+
+        updateLobby();
+    </script>
+</body>
+</html>
