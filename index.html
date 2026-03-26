@@ -20,7 +20,7 @@
             overflow-y: auto;
         }
 
-        /* --- LOBBY STYLES (COMPACT) --- */
+        /* --- LOBBY STYLES --- */
         #lobby-view {
             text-align: center;
             width: 100%;
@@ -51,19 +51,12 @@
             transition: all 0.3s;
         }
 
-        .studio-card:hover {
-            transform: scale(1.03);
-            border-color: #d4af37;
-        }
-
+        .studio-card:hover { transform: scale(1.03); border-color: #d4af37; }
         .studio-card h2 { font-family: 'Cinzel', serif; color: #e0f7fa; margin: 0; font-size: 24px; }
 
         .completion-badge {
-            display: none;
-            margin-top: 10px;
-            border-top: 1px solid #333;
-            padding-top: 5px;
-            font-size: 14px;
+            display: none; margin-top: 10px; border-top: 1px solid #333;
+            padding-top: 5px; font-size: 14px;
         }
         .completion-badge.visible { display: block; }
 
@@ -110,23 +103,27 @@
         }
 
         .option-btn:hover:not(:disabled) { border-color: #d4af37; background: rgba(61, 90, 254, 0.1); }
-
         .option-label { color: #d4af37; font-weight: bold; margin-right: 20px; font-family: 'Cinzel', serif; }
 
-        /* Logic Colors */
         .option-btn.selected { background: #d4af37 !important; color: #000; border-color: #fff; }
         .option-btn.correct { background: #39FF14 !important; color: #000; border-color: #fff; font-weight: bold; }
         .option-btn.wrong { background: #ff1744 !important; color: #fff; border-color: #fff; }
 
+        /* Override / Continue Button */
+        #manual-next {
+            display: none; margin-top: 30px; background: transparent;
+            border: 2px solid #d4af37; color: #d4af37; padding: 15px 60px;
+            font-size: 24px; font-weight: bold; border-radius: 50px;
+            cursor: pointer; font-family: 'Cinzel', serif;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            text-transform: uppercase;
+        }
+        #manual-next:hover { background: rgba(212, 175, 55, 0.1); box-shadow: 0 0 30px rgba(212, 175, 55, 0.5); }
+
         #dashboard {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #3d5afe;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 40px;
+            display: flex; justify-content: center; gap: 30px;
+            background: rgba(0, 0, 0, 0.8); border: 1px solid #3d5afe;
+            border-radius: 12px; padding: 15px; margin-top: 40px;
         }
 
         .meter { text-align: center; min-width: 220px; }
@@ -140,14 +137,13 @@
             padding: 8px 15px; border-radius: 5px; cursor: pointer; z-index: 100;
         }
 
-        /* --- MODAL --- */
         #custom-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center;
         }
         .modal-content {
             background: #050612; border: 2px solid #d4af37; border-radius: 20px;
-            padding: 50px; text-align: center; max-width: 600px; box-shadow: 0 0 50px rgba(212,175,55,0.2);
+            padding: 50px; text-align: center; max-width: 600px;
         }
         .modal-btn {
             background: transparent; color: #39FF14; border: 2px solid #39FF14;
@@ -162,46 +158,24 @@
     <div id="lobby-view">
         <h1 class="studio-title">MILLIONAIRE ACADEMY</h1>
         <button id="reset-btn" onclick="resetProgress()">Skorları Sıfırla</button>
-        
         <div class="studio-grid">
-            <div class="studio-card" onclick="startStudio('g1')">
-                <h2>STUDIO 1</h2>
-                <div id="badge-g1" class="completion-badge">
-                    <span style="color:#FFFF00">BAŞARI: <span id="percent-g1">0</span>%</span> | 
-                    <span style="color:#39FF14">SKOR: <span id="score-g1">0</span></span>
-                </div>
-            </div>
-            <div class="studio-card" onclick="startStudio('g2')">
-                <h2>STUDIO 2</h2>
-                <div id="badge-g2" class="completion-badge">
-                    <span style="color:#FFFF00">BAŞARI: <span id="percent-g2">0</span>%</span> | 
-                    <span style="color:#39FF14">SKOR: <span id="score-g2">0</span></span>
-                </div>
-            </div>
-            <div class="studio-card" onclick="startStudio('g3')">
-                <h2>STUDIO 3</h2>
-                <div id="badge-g3" class="completion-badge">
-                    <span style="color:#FFFF00">BAŞARI: <span id="percent-g3">0</span>%</span> | 
-                    <span style="color:#39FF14">SKOR: <span id="score-g3">0</span></span>
-                </div>
-            </div>
-            <div class="studio-card" onclick="startStudio('g4')">
-                <h2>STUDIO 4</h2>
-                <div id="badge-g4" class="completion-badge">
-                    <span style="color:#FFFF00">BAŞARI: <span id="percent-g4">0</span>%</span> | 
-                    <span style="color:#39FF14">SKOR: <span id="score-g4">0</span></span>
-                </div>
-            </div>
+            <div class="studio-card" onclick="startStudio('g1')"><h2>STUDIO 1</h2><div id="badge-g1" class="completion-badge"><span style="color:#FFFF00">BAŞARI: <span id="percent-g1">0</span>%</span> | <span style="color:#39FF14">SKOR: <span id="score-g1">0</span></span></div></div>
+            <div class="studio-card" onclick="startStudio('g2')"><h2>STUDIO 2</h2><div id="badge-g2" class="completion-badge"><span style="color:#FFFF00">BAŞARI: <span id="percent-g2">0</span>%</span> | <span style="color:#39FF14">SKOR: <span id="score-g2">0</span></span></div></div>
+            <div class="studio-card" onclick="startStudio('g3')"><h2>STUDIO 3</h2><div id="badge-g3" class="completion-badge"><span style="color:#FFFF00">BAŞARI: <span id="percent-g3">0</span>%</span> | <span style="color:#39FF14">SKOR: <span id="score-g3">0</span></span></div></div>
+            <div class="studio-card" onclick="startStudio('g4')"><h2>STUDIO 4</h2><div id="badge-g4" class="completion-badge"><span style="color:#FFFF00">BAŞARI: <span id="percent-g4">0</span>%</span> | <span style="color:#39FF14">SKOR: <span id="score-g4">0</span></span></div></div>
         </div>
     </div>
 
     <div id="game-view">
-        <div id="studio-container">
+        <div id="studio-container" style="display:flex; flex-direction:column; align-items:center;">
             <div id="question-box"><p id="question-text"></p></div>
             <div id="options-container">
                 <button class="option-btn" id="opt-A" onclick="handleChoice('A')"><span class="option-label">A:</span> <span id="text-A"></span></button>
                 <button class="option-btn" id="opt-B" onclick="handleChoice('B')"><span class="option-label">B:</span> <span id="text-B"></span></button>
             </div>
+            
+            <button id="manual-next" onclick="skipDelay()">Continue to Next Question ⮕</button>
+
             <div id="dashboard">
                 <div class="meter"><div class="meter-title">MISSION SCORE</div><div class="meter-val" id="score-val" style="color:#39FF14">0</div></div>
                 <div class="meter"><div class="meter-title">SUCCESS RATE</div><div class="meter-val" id="success-val" style="color:#FFFF00">0%</div></div>
@@ -289,7 +263,7 @@
             { tr: "Kahve yerine çay istiyorum.", a: "I want tea other than coffee.", b: "I want tea rather than coffee.", ans: "B" },
             { tr: "Kaşla göz arasında oldu.", a: "It happened in the wink of an eye.", b: "It happened in the blink of an eye.", ans: "B" },
             { tr: "Bunun üzerine odadan çıktı.", a: "Upon this, he left the room.", b: "Above this, he left the room.", ans: "A" },
-            { tr: "Canı pahasına yalan söylemedi.", a: "He didn't lie in expense of his life.", b: "He didn't lie in cost of his life.", ans: "A" },
+            { tr: "Canı pahasına yalan söylemedi.", a: "He didn't lie in expense of his life.", a: "He didn't lie in cost of his life.", ans: "A" },
             { tr: "O henüz burada değil.", a: "He is not here still.", b: "He is not here yet.", ans: "B" },
             { tr: "Artık aç değilim.", a: "I am not hungry anymore.", b: "I am not hungry no more.", ans: "A" },
             { tr: "Ne yaparsan yap, güvende ol.", a: "However you do, be safe.", b: "Whatever you do, be safe.", ans: "B" },
@@ -351,7 +325,7 @@
         ];
 
         let activeSet = [], retryPool = [], currentIdx = 0, score = 0, corrects = 0, totalAtts = 0, phase = 1, gameId = "";
-        let countdown, timerVal = 10;
+        let countdown, timerVal = 10, nextTaskTimeout = null;
 
         const STORAGE_KEY = "millionaireStudyProgress";
 
@@ -359,11 +333,11 @@
             const progress = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
             ['g1','g2','g3','g4'].forEach(id => {
                 const badge = document.getElementById('badge-'+id);
-                if(progress[id]) {
+                if(badge && progress[id]) {
                     badge.classList.add('visible');
                     document.getElementById('score-'+id).innerText = progress[id].score;
                     document.getElementById('percent-'+id).innerText = progress[id].percent;
-                } else { badge.classList.remove('visible'); }
+                } else if (badge) { badge.classList.remove('visible'); }
             });
         }
 
@@ -381,27 +355,20 @@
 
         function renderQuestion() {
             const pool = phase === 1 ? activeSet : retryPool;
-            
-            // End Check
             if(currentIdx >= pool.length) {
                 if(phase === 1 && retryPool.length > 0) {
-                    showModal("Lifeline Activated", "Ana tur bitti. Şimdi yanlışlarını düzeltelim. Puan yok, sadece tam öğrenme!", "BAŞLA");
+                    showModal("Lifeline Activated", "Ana tur bitti. Şimdi yanlışlarını düzeltelim. Puan yok, tam öğrenme!", "BAŞLA");
                     return;
                 } else if (phase === 2 && retryPool.length > 0) {
-                    // Loop back to start of retryPool if any still left
-                    currentIdx = 0;
-                    renderQuestion();
-                    return;
-                } else {
-                    finishGame();
-                    return;
-                }
+                    currentIdx = 0; renderQuestion(); return;
+                } else { finishGame(); return; }
             }
 
             const q = pool[currentIdx];
             document.getElementById('question-text').innerText = q.tr;
             document.getElementById('text-A').innerText = q.a;
             document.getElementById('text-B').innerText = q.b;
+            document.getElementById('manual-next').style.display = 'none';
             
             resetButtons();
             startTimer();
@@ -410,18 +377,15 @@
         function resetButtons() {
             ['A','B'].forEach(l => {
                 const b = document.getElementById('opt-'+l);
-                b.className = 'option-btn';
-                b.disabled = false;
+                b.className = 'option-btn'; b.disabled = false;
             });
         }
 
         function startTimer() {
-            clearInterval(countdown);
-            timerVal = 10;
+            clearInterval(countdown); timerVal = 10;
             document.getElementById('timer-val').innerText = timerVal;
             countdown = setInterval(() => {
-                timerVal--;
-                document.getElementById('timer-val').innerText = timerVal;
+                timerVal--; document.getElementById('timer-val').innerText = timerVal;
                 if(timerVal <= 0) clearInterval(countdown);
             }, 1000);
         }
@@ -434,41 +398,50 @@
             const correctBtn = document.getElementById('opt-'+q.ans);
             const isCorrect = (choice === q.ans);
 
-            // Immediate Lock & visual
             btn.classList.add('selected');
             document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+            document.getElementById('manual-next').style.display = 'block';
 
-            // Outcome Logic
             setTimeout(() => {
-                let delay = 2000; // Correct delay
+                let delay = 2000;
                 if(isCorrect) {
                     btn.classList.add('correct');
-                    if(phase === 1) { score += 100; corrects++; }
+                    if(phase === 1) { score += (100 + timerVal); corrects++; }
                 } else {
-                    delay = 6000; // Wrong delay
-                    btn.classList.add('wrong');
-                    correctBtn.classList.add('correct');
+                    delay = 6000; btn.classList.add('wrong'); correctBtn.classList.add('correct');
                     if(phase === 1) retryPool.push(q);
                 }
 
-                // Update Dashboard
                 if(phase === 1) {
                     totalAtts++;
                     document.getElementById('score-val').innerText = score;
                     document.getElementById('success-val').innerText = Math.round((corrects/totalAtts)*100) + "%";
                 }
 
-                // Move to next
-                setTimeout(() => {
-                    if(phase === 2 && isCorrect) {
-                        retryPool.splice(currentIdx, 1);
-                        // Don't increment index because we spliced current one
-                    } else {
-                        currentIdx++;
-                    }
-                    renderQuestion();
-                }, delay);
+                nextTaskTimeout = setTimeout(moveToNext, delay);
             }, 600);
+        }
+
+        function skipDelay() {
+            if(nextTaskTimeout) { clearTimeout(nextTaskTimeout); moveToNext(); }
+        }
+
+        function moveToNext() {
+            if(phase === 2) {
+                const q = retryPool[currentIdx];
+                // Check if they got it right in retry
+                const selectedBtn = document.querySelector('.option-btn.correct');
+                const wasActuallyCorrect = selectedBtn && selectedBtn.id === `opt-${retryPool[currentIdx].ans}`;
+                
+                if(wasActuallyCorrect) {
+                    retryPool.splice(currentIdx, 1);
+                } else {
+                    currentIdx++;
+                }
+            } else {
+                currentIdx++;
+            }
+            renderQuestion();
         }
 
         function showModal(title, msg, btnText) {
@@ -480,8 +453,7 @@
 
         function modalAction() {
             document.getElementById('custom-modal').style.display = 'none';
-            phase = 2; currentIdx = 0;
-            renderQuestion();
+            phase = 2; currentIdx = 0; renderQuestion();
         }
 
         function finishGame() {
@@ -489,9 +461,9 @@
             let progress = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
             progress[gameId] = { score, percent: perc };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-            
             document.getElementById('question-text').innerHTML = "<span style='color:#39FF14'>MISSION ACCOMPLISHED</span>";
             document.getElementById('options-container').style.display = 'none';
+            document.getElementById('manual-next').style.display = 'none';
             setTimeout(returnToLobby, 3000);
         }
 
@@ -505,8 +477,7 @@
 
         function resetProgress() {
             if(confirm("Tüm skorları silmek istediğine emin misin?")) { 
-                localStorage.removeItem(STORAGE_KEY); 
-                updateLobby(); 
+                localStorage.removeItem(STORAGE_KEY); updateLobby(); 
             }
         }
 
