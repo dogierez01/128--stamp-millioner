@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Millionaire Academy - Language Studio</title>
+    <title>Millionaire Academy - 8 Studios</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Oswald:wght@500&display=swap');
 
@@ -20,11 +20,11 @@
             overflow-y: auto;
         }
 
-        /* --- LOBBY STYLES --- */
+        /* --- LOBBY STYLES (COMPACT) --- */
         #lobby-view {
             text-align: center;
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
             padding: 20px;
         }
 
@@ -38,25 +38,30 @@
 
         .studio-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
         }
 
         .studio-card {
             background: linear-gradient(180deg, #111432 0%, #050612 100%);
             border: 2px solid #3d5afe;
-            border-radius: 30px;
-            padding: 20px;
+            border-radius: 20px;
+            padding: 15px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
-        .studio-card:hover { transform: scale(1.03); border-color: #d4af37; }
-        .studio-card h2 { font-family: 'Cinzel', serif; color: #e0f7fa; margin: 0; font-size: 24px; }
+        .studio-card:hover {
+            transform: scale(1.05);
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .studio-card h2 { font-family: 'Cinzel', serif; color: #e0f7fa; margin: 0; font-size: 18px; }
 
         .completion-badge {
-            display: none; margin-top: 10px; border-top: 1px solid #333;
-            padding-top: 5px; font-size: 14px;
+            display: none; margin-top: 8px; border-top: 1px solid #333;
+            padding-top: 5px; font-size: 12px;
         }
         .completion-badge.visible { display: block; }
 
@@ -109,7 +114,6 @@
         .option-btn.correct { background: #39FF14 !important; color: #000; border-color: #fff; font-weight: bold; }
         .option-btn.wrong { background: #ff1744 !important; color: #fff; border-color: #fff; }
 
-        /* Override / Continue Button */
         #manual-next {
             display: none; margin-top: 30px; background: transparent;
             border: 2px solid #d4af37; color: #d4af37; padding: 15px 60px;
@@ -118,7 +122,6 @@
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
             text-transform: uppercase;
         }
-        #manual-next:hover { background: rgba(212, 175, 55, 0.1); box-shadow: 0 0 30px rgba(212, 175, 55, 0.5); }
 
         #dashboard {
             display: flex; justify-content: center; gap: 30px;
@@ -157,13 +160,9 @@
 
     <div id="lobby-view">
         <h1 class="studio-title">MILLIONAIRE ACADEMY</h1>
-        <button id="reset-btn" onclick="resetProgress()">Skorları Sıfırla</button>
-        <div class="studio-grid">
-            <div class="studio-card" onclick="startStudio('g1')"><h2>STUDIO 1</h2><div id="badge-g1" class="completion-badge"><span style="color:#FFFF00">BAŞARI: <span id="percent-g1">0</span>%</span> | <span style="color:#39FF14">SKOR: <span id="score-g1">0</span></span></div></div>
-            <div class="studio-card" onclick="startStudio('g2')"><h2>STUDIO 2</h2><div id="badge-g2" class="completion-badge"><span style="color:#FFFF00">BAŞARI: <span id="percent-g2">0</span>%</span> | <span style="color:#39FF14">SKOR: <span id="score-g2">0</span></span></div></div>
-            <div class="studio-card" onclick="startStudio('g3')"><h2>STUDIO 3</h2><div id="badge-g3" class="completion-badge"><span style="color:#FFFF00">BAŞARI: <span id="percent-g3">0</span>%</span> | <span style="color:#39FF14">SKOR: <span id="score-g3">0</span></span></div></div>
-            <div class="studio-card" onclick="startStudio('g4')"><h2>STUDIO 4</h2><div id="badge-g4" class="completion-badge"><span style="color:#FFFF00">BAŞARI: <span id="percent-g4">0</span>%</span> | <span style="color:#39FF14">SKOR: <span id="score-g4">0</span></span></div></div>
-        </div>
+        <button id="reset-btn" onclick="resetProgress()">Sıfırla</button>
+        <div class="studio-grid" id="studio-grid">
+            </div>
     </div>
 
     <div id="game-view">
@@ -173,9 +172,7 @@
                 <button class="option-btn" id="opt-A" onclick="handleChoice('A')"><span class="option-label">A:</span> <span id="text-A"></span></button>
                 <button class="option-btn" id="opt-B" onclick="handleChoice('B')"><span class="option-label">B:</span> <span id="text-B"></span></button>
             </div>
-            
-            <button id="manual-next" onclick="skipDelay()">Continue to Next Question ⮕</button>
-
+            <button id="manual-next" onclick="skipDelay()">Sonraki Soruya Geç ⮕</button>
             <div id="dashboard">
                 <div class="meter"><div class="meter-title">MISSION SCORE</div><div class="meter-val" id="score-val" style="color:#39FF14">0</div></div>
                 <div class="meter"><div class="meter-title">SUCCESS RATE</div><div class="meter-val" id="success-val" style="color:#FFFF00">0%</div></div>
@@ -263,7 +260,7 @@
             { tr: "Kahve yerine çay istiyorum.", a: "I want tea other than coffee.", b: "I want tea rather than coffee.", ans: "B" },
             { tr: "Kaşla göz arasında oldu.", a: "It happened in the wink of an eye.", b: "It happened in the blink of an eye.", ans: "B" },
             { tr: "Bunun üzerine odadan çıktı.", a: "Upon this, he left the room.", b: "Above this, he left the room.", ans: "A" },
-            { tr: "Canı pahasına yalan söylemedi.", a: "He didn't lie in expense of his life.", a: "He didn't lie in cost of his life.", ans: "A" },
+            { tr: "Canı pahasına yalan söylemedi.", a: "He didn't lie in expense of his life.", b: "He didn't lie in cost of his life.", ans: "A" },
             { tr: "O henüz burada değil.", a: "He is not here still.", b: "He is not here yet.", ans: "B" },
             { tr: "Artık aç değilim.", a: "I am not hungry anymore.", b: "I am not hungry no more.", ans: "A" },
             { tr: "Ne yaparsan yap, güvende ol.", a: "However you do, be safe.", b: "Whatever you do, be safe.", ans: "B" },
@@ -324,27 +321,49 @@
             { tr: "Benzer şekilde katılıyorum.", a: "Familiarly, I agree.", b: "Similarly, I agree.", ans: "B" }
         ];
 
-        let activeSet = [], retryPool = [], currentIdx = 0, score = 0, corrects = 0, totalAtts = 0, phase = 1, gameId = "";
+        let currentShuffledSet = [], retryPool = [], currentIdx = 0, score = 0, corrects = 0, totalAtts = 0, phase = 1, gameId = "";
         let countdown, timerVal = 10, nextTaskTimeout = null;
 
-        const STORAGE_KEY = "millionaireStudyProgress";
+        const STORAGE_KEY = "millionaire8StudioProgress";
+
+        function createLobby() {
+            const grid = document.getElementById('studio-grid');
+            for(let i=1; i<=8; i++) {
+                grid.innerHTML += `
+                    <div class="studio-card" onclick="startStudio('g${i}')">
+                        <h2>STUDIO ${i}</h2>
+                        <div id="badge-g${i}" class="completion-badge">
+                            <span style="color:#FFFF00">BAŞARI: <span id="percent-g${i}">0</span>%</span><br>
+                            <span style="color:#39FF14">SKOR: <span id="score-g${i}">0</span></span>
+                        </div>
+                    </div>
+                `;
+            }
+            updateLobby();
+        }
 
         function updateLobby() {
             const progress = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-            ['g1','g2','g3','g4'].forEach(id => {
+            for(let i=1; i<=8; i++) {
+                const id = 'g'+i;
                 const badge = document.getElementById('badge-'+id);
-                if(badge && progress[id]) {
+                if(progress[id]) {
                     badge.classList.add('visible');
                     document.getElementById('score-'+id).innerText = progress[id].score;
                     document.getElementById('percent-'+id).innerText = progress[id].percent;
-                } else if (badge) { badge.classList.remove('visible'); }
-            });
+                }
+            }
         }
 
         function startStudio(id) {
             gameId = id;
-            const start = (parseInt(id.slice(1)) - 1) * 32;
-            activeSet = rawData.slice(start, start + 32);
+            const studioNum = parseInt(id.slice(1));
+            const start = (studioNum - 1) * 16;
+            const originalSet = rawData.slice(start, start + 16);
+            
+            // Randomization Engine
+            currentShuffledSet = [...originalSet].sort(() => Math.random() - 0.5);
+            
             retryPool = []; currentIdx = 0; score = 0; corrects = 0; totalAtts = 0; phase = 1;
             document.getElementById('lobby-view').style.display = 'none';
             document.getElementById('game-view').style.display = 'block';
@@ -354,10 +373,10 @@
         }
 
         function renderQuestion() {
-            const pool = phase === 1 ? activeSet : retryPool;
+            const pool = phase === 1 ? currentShuffledSet : retryPool;
             if(currentIdx >= pool.length) {
                 if(phase === 1 && retryPool.length > 0) {
-                    showModal("Lifeline Activated", "Ana tur bitti. Şimdi yanlışlarını düzeltelim. Puan yok, tam öğrenme!", "BAŞLA");
+                    showModal("Lifeline Aktif", "Ana tur bitti. Şimdi yanlışlarını düzeltene kadar devam edeceğiz!", "BAŞLA");
                     return;
                 } else if (phase === 2 && retryPool.length > 0) {
                     currentIdx = 0; renderQuestion(); return;
@@ -392,7 +411,7 @@
 
         function handleChoice(choice) {
             clearInterval(countdown);
-            const pool = phase === 1 ? activeSet : retryPool;
+            const pool = phase === 1 ? currentShuffledSet : retryPool;
             const q = pool[currentIdx];
             const btn = document.getElementById('opt-'+choice);
             const correctBtn = document.getElementById('opt-'+q.ans);
@@ -422,18 +441,18 @@
             }, 600);
         }
 
-        function skipDelay() {
-            if(nextTaskTimeout) { clearTimeout(nextTaskTimeout); moveToNext(); }
-        }
+        function skipDelay() { if(nextTaskTimeout) { clearTimeout(nextTaskTimeout); moveToNext(); } }
 
         function moveToNext() {
             if(phase === 2) {
+                // If correct in retry, remove it. If wrong, keep it to ask again later.
+                const correctBtn = document.querySelector('.option-btn.correct');
                 const q = retryPool[currentIdx];
-                // Check if they got it right in retry
-                const selectedBtn = document.querySelector('.option-btn.correct');
-                const wasActuallyCorrect = selectedBtn && selectedBtn.id === `opt-${retryPool[currentIdx].ans}`;
+                const wasActuallyCorrect = correctBtn && correctBtn.id === `opt-${q.ans}` && !correctBtn.classList.contains('selected') === false;
                 
-                if(wasActuallyCorrect) {
+                // Logic: check which button turned green. If it was the one we clicked, splice.
+                const selectedBtn = document.querySelector('.option-btn.selected');
+                if(selectedBtn && selectedBtn.classList.contains('correct')) {
                     retryPool.splice(currentIdx, 1);
                 } else {
                     currentIdx++;
@@ -461,7 +480,7 @@
             let progress = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
             progress[gameId] = { score, percent: perc };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-            document.getElementById('question-text').innerHTML = "<span style='color:#39FF14'>MISSION ACCOMPLISHED</span>";
+            document.getElementById('question-text').innerHTML = "<span style='color:#39FF14'>STUDIO COMPLETE</span>";
             document.getElementById('options-container').style.display = 'none';
             document.getElementById('manual-next').style.display = 'none';
             setTimeout(returnToLobby, 3000);
@@ -475,13 +494,9 @@
             updateLobby();
         }
 
-        function resetProgress() {
-            if(confirm("Tüm skorları silmek istediğine emin misin?")) { 
-                localStorage.removeItem(STORAGE_KEY); updateLobby(); 
-            }
-        }
+        function resetProgress() { if(confirm("Skorları sil?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
 
-        updateLobby();
+        createLobby();
     </script>
 </body>
 </html>
